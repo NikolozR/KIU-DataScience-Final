@@ -1,0 +1,128 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def plot_target_distribution(df, target_col='G3', save_path=None):
+    """
+    Plots the distribution of the target variable using histogram with KDE.
+    """
+    plt.figure(figsize=(10, 6))
+    sns.histplot(df[target_col], kde=True, bins=20, color='steelblue')
+    plt.title(f"Distribution of {target_col} Grades", fontsize=14, fontweight='bold')
+    plt.xlabel("Grade", fontsize=12)
+    plt.ylabel("Count", fontsize=12)
+    plt.grid(True, alpha=0.3)
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_correlation_heatmap(df, save_path=None, top_n=15):
+    """
+    Plots correlation heatmap for numeric columns.
+    """
+    plt.figure(figsize=(14, 12))
+    numeric_df = df.select_dtypes(include=['number'])
+    
+    corr_matrix = numeric_df.corr()
+    
+    # Select top N most correlated with target
+    if 'G3' in corr_matrix.columns and top_n:
+        top_features = corr_matrix['G3'].abs().nlargest(top_n).index
+        corr_matrix = corr_matrix.loc[top_features, top_features]
+    
+    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', 
+                linewidths=0.5, annot_kws={"size": 8}, center=0,
+                square=True, cbar_kws={"shrink": 0.8})
+    plt.title("Correlation Heatmap (Top Features)", fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_box_comparison(df, x_col, y_col, save_path=None):
+    """
+    Plots a boxplot to compare distributions across categories.
+    """
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(x=x_col, y=y_col, data=df, palette='Set2')
+    plt.title(f"{y_col} Distribution by {x_col}", fontsize=14, fontweight='bold')
+    plt.xlabel(x_col, fontsize=12)
+    plt.ylabel(y_col, fontsize=12)
+    plt.grid(True, alpha=0.3, axis='y')
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_scatter_trend(df, x_col, y_col, save_path=None):
+    """
+    Plots a scatter plot with regression trendline.
+    """
+    plt.figure(figsize=(10, 6))
+    sns.regplot(x=x_col, y=y_col, data=df, scatter_kws={'alpha':0.5}, 
+                line_kws={'color':'red', 'linewidth':2})
+    plt.title(f"Relationship between {x_col} and {y_col}", fontsize=14, fontweight='bold')
+    plt.xlabel(x_col, fontsize=12)
+    plt.ylabel(y_col, fontsize=12)
+    plt.grid(True, alpha=0.3)
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_count_chart(df, col, save_path=None):
+    """
+    Plots a count plot (bar chart) for categorical variables.
+    """
+    plt.figure(figsize=(10, 6))
+    order = df[col].value_counts().index
+    sns.countplot(x=col, data=df, order=order, palette='viridis')
+    plt.title(f"Count Distribution of {col}", fontsize=14, fontweight='bold')
+    plt.xlabel(col, fontsize=12)
+    plt.ylabel("Count", fontsize=12)
+    plt.xticks(rotation=45, ha='right')
+    plt.grid(True, alpha=0.3, axis='y')
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_violin_comparison(df, x_col, y_col, save_path=None):
+    """
+    Plots a violin plot to show distribution and density across categories.
+    """
+    plt.figure(figsize=(12, 6))
+    sns.violinplot(x=x_col, y=y_col, data=df, palette='muted', inner='box')
+    plt.title(f"{y_col} Distribution by {x_col} (Violin Plot)", fontsize=14, fontweight='bold')
+    plt.xlabel(x_col, fontsize=12)
+    plt.ylabel(y_col, fontsize=12)
+    plt.xticks(rotation=45, ha='right')
+    plt.grid(True, alpha=0.3, axis='y')
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_pairplot(df, features, save_path=None):
+    """
+    Creates a pairplot for multivariate analysis of selected features.
+    """
+    if 'G3' not in features and 'G3' in df.columns:
+        features = features + ['G3']
+    
+    pairplot = sns.pairplot(df[features], diag_kind='kde', plot_kws={'alpha':0.6})
+    pairplot.fig.suptitle("Pairplot of Key Features", y=1.02, fontsize=14, fontweight='bold')
+    
+    if save_path:
+        pairplot.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+

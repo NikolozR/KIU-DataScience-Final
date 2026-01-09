@@ -189,6 +189,11 @@ def preprocess_pipeline(mat_path, por_path, output_path='data/processed/student_
     df_no_outliers = handle_outliers(df_cleaned)
     print("Outlier handling completed\n")
     
+    # Save pre-encoded version for visualizations
+    viz_path = 'data/processed/student_for_viz.csv'
+    df_no_outliers.to_csv(viz_path, index=False)
+    print(f"  Saved visualization-ready data to: {viz_path}\n")
+    
     # Step 4: Encode categorical variables
     print("Step 4/5: Encoding categorical variables...")
     df_encoded = encode_categorical(df_no_outliers)
