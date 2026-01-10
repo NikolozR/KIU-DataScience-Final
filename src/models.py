@@ -3,6 +3,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import (
     accuracy_score, confusion_matrix,
     precision_score, recall_score, f1_score
@@ -109,3 +112,42 @@ def evaluate_classification(model, X_test, y_test, model_name):
         'f1': f1,
         'confusion_matrix': cm
     }
+
+def train_and_evaluate_regression(df):
+    """
+    Train and evaluate all regression models.
+    """    
+    # Split data
+    X_train, X_test, y_train, y_test = split_data_regression(df)
+    
+    results = {}
+    
+    # Model 1: Linear Regression
+    print("Model 1: Linear Regression")
+    lr_model = LinearRegression()
+    lr_model.fit(X_train, y_train)
+    results['Linear Regression'] = evaluate_regression(
+        lr_model, X_test, y_test, "Linear Regression"
+    )
+
+    # Model 2: Decision Tree Regressor
+    print("Model 2: Decision Tree Regressor")
+    dt_model = DecisionTreeRegressor(max_depth=10, random_state=42)
+    dt_model.fit(X_train, y_train)
+    results['Decision Tree Reg'] = evaluate_regression(dt_model, X_test, y_test, "Decision Tree Regressor")
+
+     # Model 3: Random Forest Regressor
+    print("Model 3: Random Forest Regressor")
+    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
+    results['Random Forest Reg'] = evaluate_regression(
+        rf_model, X_test, y_test, "Random Forest Regressor"
+    )
+    
+    return results
+
+
+df = load_processed_data()
+
+results = train_and_evaluate_regression(df)
+print(results)
