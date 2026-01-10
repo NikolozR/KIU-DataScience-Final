@@ -6,9 +6,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score, confusion_matrix,
-    precision_score, recall_score, f1_score
+    precision_score, recall_score, f1_score,
 )
 
 
@@ -147,7 +150,45 @@ def train_and_evaluate_regression(df):
     return results
 
 
+def train_and_evaluate_classification(df):
+    """
+    Train and evaluate all classification models.
+    """
+    # Split data
+    X_train, X_test, y_train, y_test = split_data_classification(df)
+    
+    results = {}
+    
+    # Model 1: Logistic Regression
+    print("Model 1: Logistic Regression")
+    lr_model = LogisticRegression(max_iter=1000, random_state=42)
+    lr_model.fit(X_train, y_train)
+    results['Logistic Regression'] = evaluate_classification(
+        lr_model, X_test, y_test, "Logistic Regression"
+    )
+    
+    # Model 2: Decision Tree
+    print("Model 2: Decision Tree Classifier")
+    dt_model = DecisionTreeClassifier(max_depth=10, random_state=42)
+    dt_model.fit(X_train, y_train)
+    results['Decision Tree'] = evaluate_classification(
+        dt_model, X_test, y_test, "Decision Tree"
+    )
+    
+    # Model 3: Random Forest Classifier
+    print("Model 3: Random Forest Classifier")
+    rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
+    results['Random Forest'] = evaluate_classification(
+        rf_model, X_test, y_test, "Random Forest"
+    )
+    
+    return results
+
 df = load_processed_data()
 
-results = train_and_evaluate_regression(df)
+
+
+
+results = train_and_evaluate_classification(df)
 print(results)
