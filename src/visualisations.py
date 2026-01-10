@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 
 def plot_target_distribution(df, target_col='G3', save_path=None):
@@ -126,3 +127,62 @@ def plot_pairplot(df, features, save_path=None):
         print(f"  Saved: {save_path}")
     plt.close()
 
+
+
+def plot_feature_importance(feature_names, importances, top_n=15, save_path=None):
+    """
+    Plots feature importance from tree-based models.
+    """
+    importance_df = pd.DataFrame({
+        'feature': feature_names,
+        'importance': importances
+    }).sort_values('importance', ascending=False).head(top_n)
+    
+    plt.figure(figsize=(10, 8))
+    sns.barplot(x='importance', y='feature', data=importance_df, palette='rocket')
+    plt.title(f"Top {top_n} Feature Importances", fontsize=14, fontweight='bold')
+    plt.xlabel("Importance Score", fontsize=12)
+    plt.ylabel("Feature", fontsize=12)
+    plt.grid(True, alpha=0.3, axis='x')
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def plot_confusion_matrix(cm, labels=['Failed', 'Passed'], save_path=None):
+    """
+    Plots a confusion matrix heatmap.
+    """
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=labels, yticklabels=labels,
+                cbar_kws={"shrink": 0.8})
+    plt.title("Confusion Matrix", fontsize=14, fontweight='bold')
+    plt.xlabel("Predicted Label", fontsize=12)
+    plt.ylabel("True Label", fontsize=12)
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  Saved: {save_path}")
+    plt.close()
+
+def main():
+    """
+    Generates all EDA visualizations and saves them to reports/figures/.
+    Uses student_for_viz.csv which has categorical columns intact.
+    """
+    df = pd.read_csv('data/processed/student_for_viz.csv')
+    
+    plot_target_distribution(df, save_path='reports/figures/01_target_distribution.png')
+    plot_correlation_heatmap(df, save_path='reports/figures/02_correlation_heatmap.png')
+    
+    plot_box_comparison(df, 'subject', 'G3', save_path='reports/figures/03_boxplot_subject_g3.png')
+    plot_scatter_trend(df, 'G1', 'G3', save_path='reports/figures/04_scatter_g1_g3.png')
+    plot_count_chart(df, 'subject', save_path='reports/figures/05_countplot_subject.png')
+    plot_violin_comparison(df, 'subject', 'G3', save_path='reports/figures/06_violin_subject_g3.png')
+    plot_pairplot(df, ['G1', 'G2', 'studytime', 'failures'], 
+                  save_path='reports/figures/07_pairplot.png')
+
+if __name__ == "__main__":
+    main()
